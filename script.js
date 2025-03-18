@@ -1,7 +1,8 @@
-let marchaAtual = 1;
+let marchaAtual = 0; // Inicializa em ponto morto
 let velocidade = 0;
 let rpm = 0;
 let embreagemPressionada = false;
+let freioDeMaoPuxado = true; // Freio de mão começa puxado
 
 const marchaAtualElement = document.getElementById('marcha-atual');
 const velocidadeElement = document.getElementById('velocidade');
@@ -13,6 +14,7 @@ const frearButton = document.getElementById('frear');
 const aumentarMarchaButton = document.getElementById('aumentar-marcha');
 const reduzirMarchaButton = document.getElementById('reduzir-marcha');
 const embreagemButton = document.getElementById('embreagem');
+const freioDeMaoButton = document.getElementById('freio-de-mao'); // Adicionado botão de freio de mão
 
 // Configuração do gráfico
 const ctx = document.getElementById('grafico-velocidade-rpm').getContext('2d');
@@ -68,6 +70,10 @@ function atualizarPainel() {
 
 // Função para acelerar
 function acelerar() {
+    if (freioDeMaoPuxado) {
+        alert("Solte o freio de mão para acelerar!");
+        return;
+    }
     if (marchaAtual === 0) {
         alert("Coloque uma marcha para acelerar!");
         return;
@@ -93,6 +99,12 @@ function frear() {
 
 // Função para aumentar a marcha
 function aumentarMarcha() {
+    if (!freioDeMaoPuxado) { marchaAtual = 1; }   
+
+    if (freioDeMaoPuxado) {
+        alert("Solte o freio de mão para trocar de marcha!");
+        return;
+    }
     if (!embreagemPressionada) {
         alert("Pise na embreagem para trocar de marcha!");
         return;
@@ -104,58 +116,18 @@ function aumentarMarcha() {
         }
         marchaAtual++;
         rpm -= 1500; // Reduz o RPM ao trocar de marcha
-        rpm = 0;
-            } else {
-            alert("Já está na marcha máxima!");
-        }
-
-        // Adiciona o freio de mão
-        let freioDeMaoPuxado = true;
-
-        // Função para alternar o freio de mão
-        function toggleFreioDeMao() {
-            freioDeMaoPuxado = !freioDeMaoPuxado;
-            document.getElementById('freio-de-mao').textContent = freioDeMaoPuxado ? "Soltar Freio de Mão" : "Puxar Freio de Mão";
-            if (freioDeMaoPuxado) {
-                velocidade = 0; // Para o carro ao puxar o freio de mão
-                rpm = 0;
-            }
-        }
-
-        // Modifica a lógica para impedir a troca de marcha com o freio de mão puxado
-        function aumentarMarcha() {
-            if (freioDeMaoPuxado) {
-                alert("Solte o freio de mão para trocar de marcha!");
-                return;
-            }
-            if (!embreagemPressionada) {
-                alert("Pise na embreagem para trocar de marcha!");
-                return;
-            }
-            if (marchaAtual < 5) {
-                if (rpm < 800 || rpm > 5000) {
-                    alert("RPM fora da faixa ideal para trocar de marcha!");
-                    return;
-                }
-                marchaAtual++;
-                rpm -= 1500; // Reduz o RPM ao trocar de marcha
-                if (rpm < 0) rpm = 0;
-            } else {
-            alert("Já está na marcha máxima!");
-        }
-
-        // Inicializa a marcha em ponto morto
-        marchaAtual = 0;
-        marchaAtualElement.textContent = marchaAtual;
-
-        // Event listener para o freio de mão
-        document.getElementById('freio-de-mao').addEventListener('click', toggleFreioDeMao);
+        if (rpm < 0) rpm = 0;
+    } else {
         alert("Já está na marcha máxima!");
     }
 }
 
 // Função para reduzir a marcha
 function reduzirMarcha() {
+    if (freioDeMaoPuxado) {
+        alert("Solte o freio de mão para trocar de marcha!");
+        return;
+    }
     if (!embreagemPressionada) {
         alert("Pise na embreagem para trocar de marcha!");
         return;
@@ -181,19 +153,25 @@ function toggleEmbreagem() {
     reduzirMarchaButton.disabled = !embreagemPressionada;
 }
 
+// Função para alternar o freio de mão
+function toggleFreioDeMao() {
+    freioDeMaoPuxado = !freioDeMaoPuxado;
+    freioDeMaoButton.textContent = freioDeMaoPuxado ? "Soltar Freio de Mão" : "Puxar Freio de Mão";
+    if (freioDeMaoPuxado) {
+        velocidade = 0; // Para o carro ao puxar o freio de mão
+        rpm = 0;
+    }
+}
+
 // Loop de animação para atualizar o carro continuamente
 function animar() {
     // Reduz a velocidade gradualmente (simula resistência do ar e atrito)
-    if (velocidade > 0) {
+    if (velocidade > 0 && !freioDeMaoPuxado) {
         velocidade -= 0.1;
         rpm -= 10;
         if (velocidade < 0) velocidade = 0;
         if (rpm < 0) rpm = 0;
     }
-    if (velocidade === 0) {
-        rpm = 0;
-    }
-
 
     // Atualiza o painel e o gráfico
     atualizarPainel();
@@ -208,6 +186,7 @@ frearButton.addEventListener('click', frear);
 aumentarMarchaButton.addEventListener('click', aumentarMarcha);
 reduzirMarchaButton.addEventListener('click', reduzirMarcha);
 embreagemButton.addEventListener('click', toggleEmbreagem);
+freioDeMaoButton.addEventListener('click', toggleFreioDeMao);
 
 // Inicia o loop de animação
 animar();
