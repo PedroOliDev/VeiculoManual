@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Câmbio Manual</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Simulador de Câmbio Manual</h1>
+        <div class="dashboard">
+            <p>Marcha Atual: <span id="marcha-atual">1</span></p>
+            <p>Velocidade: <span id="velocidade">0</span> km/h</p>
+            <p>RPM: <span id="rpm">0</span></p>
+        </div>
+        <div class="controles">
+            <button id="embreagem">Embreagem</button>
+            <button id="acelerar">Acelerar</button>
+            <button id="frear">Frear</button>
+            <button id="aumentar-marcha">Aumentar Marcha</button>
+            <button id="reduzir-marcha">Reduzir Marcha</button>
+        </div>
+        <div class="grafico">
+            <canvas id="grafico-velocidade-rpm"></canvas>
+        </div>
+        <!-- Representação visual do carro -->
+        <div class="estrada">
+            <div id="carro"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
